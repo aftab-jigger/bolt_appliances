@@ -1,4 +1,5 @@
 import Navbar from "./components/layout/Navbar/Navbar";
+import AboutUsSection from "./components/sections/AboutSection";
 import Hero from "./components/sections/Hero";
 
 const App = () => {
@@ -7,6 +8,7 @@ const App = () => {
       <Navbar />
       {/* Hero Section */}
       <Hero />
+      <AboutUsSection />
       <main className="mt-16">
         <section id="products" className="py-16">
           <h3 className="text-3xl text-center font-bold">Our Products</h3>

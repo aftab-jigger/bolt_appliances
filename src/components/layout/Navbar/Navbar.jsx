@@ -2,7 +2,10 @@ import { useState } from "react";
 import { HiMenu, HiX } from "react-icons/hi";
 import NavItemMobile from "./NavItemMobile";
 import NavItemsDesktop from "./NavItemsDesktop";
-import Logo from "../../ui/Logo";
+import { Menu, X, Search, ShoppingCart, User, LineChart } from "lucide-react";
+import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import Logo from "../../../assets/logo/Logo";
 import Hero from "../../sections/Hero";
 
 const Navbar = () => {
@@ -10,40 +13,55 @@ const Navbar = () => {
   const toggleMenu = () => setIsOpen(!isOpen);
 
   return (
-    <header className="relative">
-      {/* Navbar */}
-      <nav className="bg-white shadow-md fixed w-full z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            {/* Logo */}
-            <Logo />
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container mx-auto px-4">
+        <div className="flex h-16 items-center justify-between">
+          {/* Logo */}
+          <Logo/>
 
-            {/* Desktop Menu */}
-            <NavItemsDesktop />
+          {/* Desktop Menu */}
+          <NavItemsDesktop />
 
-            {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center">
-              <button
-                onClick={toggleMenu}
-                className="text-gray-700 focus:outline-none"
-              >
-                {isOpen ? (
-                  <HiX className="h-6 w-6" />
-                ) : (
-                  <HiMenu className="h-6 w-6" />
-                )}
-              </button>
-            </div>
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center space-x-4">
+            <Button variant="ghost" size="icon" aria-label="Search">
+              <Search className="h-5 w-5" />
+            </Button>
+            <Button variant="ghost" size="icon" aria-label="Cart">
+              <ShoppingCart className="h-5 w-5" />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" aria-label="User menu">
+                  <User className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuItem>Orders</DropdownMenuItem>
+                <DropdownMenuItem>Settings</DropdownMenuItem>
+                <DropdownMenuItem>Logout</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
+
+          {/* Mobile Menu Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={toggleMenu}
+            aria-label="Toggle menu"
+          >
+            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </Button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Navigation */}
         {isOpen && <NavItemMobile />}
-      </nav>
-
-      {/* Hero Section
-      <Hero /> */}
+      </div>
     </header>
   );
 };
 export default Navbar;
+
