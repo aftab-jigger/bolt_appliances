@@ -10,7 +10,7 @@ const slides = [
     description:
       "Discover our range of energy-efficient smart refrigerators with advanced cooling technology.",
     image:
-      "../../src/assets/illustrationIamges/modern-smart-refrigerator-kitchen-illustration.jpeg",
+      "/illustratedImages/modern-smart-refrigerator-kitchen-illustration.jpeg",
     cta: "Shop Refrigerators",
   },
 
@@ -20,7 +20,7 @@ const slides = [
     subtitle: "Stay Cool All Year Round",
     description:
       "Beat the heat with our energy-saving air conditioners featuring smart climate control.",
-    image: "../../src/assets/illustrationIamges/Oven.jpeg",
+    image: "/illustratedImages/Oven.jpeg",
     cta: "Shop ACs",
   },
   {
@@ -29,7 +29,7 @@ const slides = [
     subtitle: "Cook Like a Pro",
     description:
       "Elevate your cooking experience with our premium microwave ovens and kitchen essentials.",
-    image: "../../src/assets/illustrationIamges/Hob.jpeg",
+    image: "/illustratedImages/Hob.jpeg",
     cta: "Shop Kitchen",
   },
 ];
