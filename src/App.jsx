@@ -4,6 +4,7 @@ import Hero from "./components/sections/Hero";
 import StatisticsSection from "./components/sections/StatisticsSection";
 import ProductCategories from "./components/sections/ProductCategories";
 import Testimonial from "./components/sections/Testimonial";
+import ContactSection from "./components/sections/ContactSection";
 
 
 const App = () => {
@@ -16,6 +17,7 @@ const App = () => {
       <StatisticsSection />
       <ProductCategories />
       <Testimonial />
+      <ContactSection />
       <main className="mt-16">
         <section id="products" className="py-16">
           <h3 className="text-3xl text-center font-bold">Our Products</h3>
