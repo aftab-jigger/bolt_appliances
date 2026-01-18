@@ -1,6 +1,7 @@
 import Navbar from "./components/layout/Navbar/Navbar";
-import AboutUsSection from "./components/sections/AboutSection";
+import AboutSection from "./components/sections/AboutSection";
 import Hero from "./components/sections/Hero";
+import StatisticsSection from "./components/sections/StatisticsSection";
 
 const App = () => {
   return (
@@ -8,7 +9,8 @@ const App = () => {
       <Navbar />
       {/* Hero Section */}
       <Hero />
-      <AboutUsSection />
+      <AboutSection />
+      <StatisticsSection />
       <main className="mt-16">
         <section id="products" className="py-16">
           <h3 className="text-3xl text-center font-bold">Our Products</h3>
