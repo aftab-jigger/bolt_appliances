@@ -1,23 +1,31 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
+
+const linkClasses = ({ isActive }) =>
+  `text-sm font-medium transition-colors px-3 py-1 rounded-full ${
+    isActive
+      ? "bg-teal-500 text-white"
+      : "text-foreground hover:text-primary"
+  }`;
 
 const NavItemsDesktop = () => {
   return (
     <div className="hidden md:flex items-center space-x-6">
-      <a href="#" className="text-sm font-medium transition-colors hover:text-primary">
+      <NavLink to="/" className={linkClasses} end>
         Home
-      </a>
-      <a href="#" className="text-sm font-medium transition-colors hover:text-primary">
+      </NavLink>
+      <NavLink to="/products" className={linkClasses}>
         Products
-      </a>
-      <a href="#" className="text-sm font-medium transition-colors hover:text-primary">
+      </NavLink>
+      <NavLink to="/services" className={linkClasses}>
         Services
-      </a>
-      <a href="#" className="text-sm font-medium transition-colors hover:text-primary">
+      </NavLink>
+      <NavLink to="/about" className={linkClasses}>
         About
-      </a>
-      <a href="#" className="text-sm font-medium transition-colors hover:text-primary">
+      </NavLink>
+      <NavLink to="/contact" className={linkClasses}>
         Contact
-      </a>
+      </NavLink>
     </div>
   );
 };

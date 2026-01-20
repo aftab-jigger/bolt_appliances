@@ -6,7 +6,6 @@ import { Menu, X, Search, ShoppingCart, User, LineChart } from "lucide-react";
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import Logo from "../../../assets/logo/Logo";
-import Hero from "../../sections/Hero";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -58,7 +57,12 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Navigation */}
-        {isOpen && <NavItemMobile />}
+        {isOpen && (
+          <NavItemMobile
+            onNavigate={() => setIsOpen(false)}
+            onClose={() => setIsOpen(false)}
+          />
+        )}
       </div>
     </header>
   );

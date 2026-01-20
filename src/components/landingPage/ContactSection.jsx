@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react"
 import { ArrowRight, Clock, Phone, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Link } from "react-router-dom"
 
 
 const ContactSection = () => {
@@ -132,14 +133,14 @@ const ContactSection = () => {
 
           {/* CTA Button */}
           <div>
-            <a href="/contact">
+            <Link to="/contact">
               <Button
                 className="px-10 sm:px-12 py-6 sm:py-7 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white rounded-xl font-semibold text-base sm:text-lg shadow-xl hover:shadow-2xl transition-all duration-300 group"
               >
                 Contact Us
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
-            </a>
+            </Link>
           </div>
         </div>
       </div>

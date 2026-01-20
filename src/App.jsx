@@ -1,30 +1,40 @@
+import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/layout/Navbar/Navbar";
-import AboutSection from "./components/sections/AboutSection";
-import Hero from "./components/sections/Hero";
-import StatisticsSection from "./components/sections/StatisticsSection";
-import ProductCategories from "./components/sections/ProductCategories";
-import Testimonial from "./components/sections/Testimonial";
-import ContactSection from "./components/sections/ContactSection";
+import AboutSection from "./components/landingPage/AboutSection";
+import Hero from "./components/landingPage/Hero";
+import StatisticsSection from "./components/landingPage/StatisticsSection";
+import ProductCategories from "./components/landingPage/ProductCategories";
+import Testimonial from "./components/landingPage/Testimonial";
+import ContactSection from "./components/landingPage/ContactSection";
+import Services from "./components/service/Services";
+import About from "./components/about/About";
+import ProductList from "./components/products/ProductList";
+import ContactUs from "./components/contact/ContactUs";
 
+const HomePage = () => (
+  <>
+    <Hero />
+    <AboutSection />
+    <StatisticsSection />
+    <ProductCategories />
+    <Testimonial />
+    <ContactSection />
+  </>
+);
 
 const App = () => {
   return (
     <>
       <Navbar />
-      {/* Hero Section */}
-      <Hero />
-      <AboutSection />
-      <StatisticsSection />
-      <ProductCategories />
-      <Testimonial />
-      <ContactSection />
-      <main className="mt-16">
-        <section id="products" className="py-16">
-          <h3 className="text-3xl text-center font-bold">Our Products</h3>
-        </section>
-        <section id="contact" className="py-16 bg-gray-50">
-          <h3 className="text-3xl text-center font-bold">Contact Us</h3>
-        </section>
+      <main>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/products" element={<ProductList />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="*" element={<HomePage />} />
+        </Routes>
       </main>
     </>
   );
