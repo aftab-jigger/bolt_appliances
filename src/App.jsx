@@ -10,13 +10,15 @@ import Services from "./components/service/Services";
 import About from "./components/about/About";
 import ProductList from "./components/products/ProductList";
 import ContactUs from "./components/contact/ContactUs";
+import CategoryPage from "./components/products/category/CategoryPage";
+import Product from "./components/products/category/id/Product";
 
 const HomePage = () => (
   <>
     <Hero />
+    <ProductCategories />
     <AboutSection />
     <StatisticsSection />
-    <ProductCategories />
     <Testimonial />
     <ContactSection />
   </>
@@ -34,6 +36,9 @@ const App = () => {
           <Route path="/products" element={<ProductList />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="*" element={<HomePage />} />
+          <Route path="/products/:category" element={<CategoryPage />} />
+          <Route path="/products/:category/:id" element={<Product />} />
+
         </Routes>
       </main>
     </>

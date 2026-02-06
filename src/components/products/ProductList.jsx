@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState, useRef, useCallback } from "react"
+import { Link } from "react-router-dom"
 import { 
   ChevronDown, 
   ChevronLeft, 
@@ -11,34 +12,8 @@ import {
   X,
   SlidersHorizontal
 } from "lucide-react"
-import { Button } from "@/components/ui/button" // Declare the FilterBar variable
-
-// Generate 60 dummy products
-const generateProducts = () => {
-  const categories = ["Dryer", "Dishwasher", "Refrigerator", "Microwave Oven", "Cooker", "Hobs"]
-  const brands = ["Samsung", "LG", "Bosch", "Whirlpool", "Siemens", "Miele"]
-  const features = [
-    ["Energy Efficient", "Smart Control", "Quiet Operation", "Fast Cycle"],
-    ["Auto Sensor", "Steam Clean", "Delay Start", "Child Lock"],
-    ["Frost Free", "Multi-Zone", "LED Display", "Eco Mode"],
-  ]
-  
-  return Array.from({ length: 60 }, (_, i) => ({
-    id: i + 1,
-    name: `${brands[i % brands.length]} ${categories[i % categories.length]}`,
-    model: `Model ${String.fromCharCode(65 + (i % 26))}${1000 + i}`,
-    price: 299 + Math.floor(Math.random() * 1200),
-    originalPrice: 399 + Math.floor(Math.random() * 1400),
-    description: "High-performance appliance with advanced features for modern homes. Energy efficient and built to last.",
-    rating: 3.5 + Math.random() * 1.5,
-    reviews: 10 + Math.floor(Math.random() * 490),
-    category: categories[i % categories.length],
-    brand: brands[i % brands.length],
-    features: features[i % features.length],
-  }))
-}
-
-const products = generateProducts()
+import { Button } from "@/components/ui/button"
+import { products, getCategorySlug } from "@/lib/data"
 
 // Product placeholder SVG
 function ProductImage() {
@@ -83,8 +58,10 @@ function StarRating({ rating, reviews }) {
 // Product Card Component
 function ProductCard({ product }) {
   const [showFeatures, setShowFeatures] = useState(false)
+  const categorySlug = getCategorySlug(product.category)
 
   return (
+    <Link to={`/products/${categorySlug}/${product.id}`} className="block">
     <div className="group relative bg-card rounded-xl sm:rounded-2xl shadow-sm border hover:shadow-xl transition-all duration-300 hover:-translate-y-1 sm:hover:-translate-y-2 overflow-hidden">
       {/* Background gradient on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -176,67 +153,68 @@ function ProductCard({ product }) {
         </div>
       </div>
     </div>
+  </Link>
   )
 }
 
 // Dropdown Filter Component
-function FilterDropdown({ label, value, options, onChange, isOpen, onToggle }) {
-  const dropdownRef = useRef(null)
+// function FilterDropdown({ label, value, options, onChange, isOpen, onToggle }) {
+//   const dropdownRef = useRef(null)
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        if (isOpen) onToggle()
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [isOpen, onToggle])
+//   useEffect(() => {
+//     const handleClickOutside = (event) => {
+//       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+//         if (isOpen) onToggle()
+//       }
+//     }
+//     document.addEventListener("mousedown", handleClickOutside)
+//     return () => document.removeEventListener("mousedown", handleClickOutside)
+//   }, [isOpen, onToggle])
 
-  return (
-    <div ref={dropdownRef} className="relative">
-      <button
-        onClick={onToggle}
-        className="flex items-center justify-between w-full px-4 py-2.5 bg-white border border-teal-200 rounded-xl text-sm font-medium text-foreground hover:border-teal-400 hover:bg-teal-50/50 transition-all duration-200"
-      >
-        <span className="flex items-center gap-2">
-          <span className="text-muted-foreground">{label}:</span>
-          <span className="text-teal-600">{value}</span>
-        </span>
-        <ChevronDown
-          className={`w-4 h-4 text-teal-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
-        />
-      </button>
+//   return (
+//     <div ref={dropdownRef} className="relative">
+//       <button
+//         onClick={onToggle}
+//         className="flex items-center justify-between w-full px-4 py-2.5 bg-white border border-teal-200 rounded-xl text-sm font-medium text-foreground hover:border-teal-400 hover:bg-teal-50/50 transition-all duration-200"
+//       >
+//         <span className="flex items-center gap-2">
+//           <span className="text-muted-foreground">{label}:</span>
+//           <span className="text-teal-600">{value}</span>
+//         </span>
+//         <ChevronDown
+//           className={`w-4 h-4 text-teal-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+//         />
+//       </button>
       
-      {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-teal-100 rounded-xl shadow-lg z-50 overflow-hidden">
-          <div className="max-h-60 overflow-y-auto py-1">
-            {options.map((option, i) => {
-              const optionValue = typeof option === "string" ? option : option.label
-              const isSelected = value === optionValue
-              return (
-                <button
-                  key={i}
-                  onClick={() => {
-                    onChange(option)
-                    onToggle()
-                  }}
-                  className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${
-                    isSelected
-                      ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white"
-                      : "text-foreground hover:bg-teal-50"
-                  }`}
-                >
-                  {optionValue}
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
+//       {isOpen && (
+//         <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-teal-100 rounded-xl shadow-lg z-50 overflow-hidden">
+//           <div className="max-h-60 overflow-y-auto py-1">
+//             {options.map((option, i) => {
+//               const optionValue = typeof option === "string" ? option : option.label
+//               const isSelected = value === optionValue
+//               return (
+//                 <button
+//                   key={i}
+//                   onClick={() => {
+//                     onChange(option)
+//                     onToggle()
+//                   }}
+//                   className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${
+//                     isSelected
+//                       ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white"
+//                       : "text-foreground hover:bg-teal-50"
+//                   }`}
+//                 >
+//                   {optionValue}
+//                 </button>
+//               )
+//             })}
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   )
+// }
 
 // Filter constants
 const categories = ["All", "Dryer", "Dishwasher", "Refrigerator", "Microwave Oven", "Cooker", "Hobs"]

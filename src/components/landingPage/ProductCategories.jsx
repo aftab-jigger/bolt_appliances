@@ -1,6 +1,7 @@
 "use client"
 
 import { ArrowRight } from "lucide-react"
+import { Link } from "react-router-dom"
 
 const categories = [
   {
@@ -124,8 +125,8 @@ const ProductCategories = () => {
   return (
     <section className="py-12 sm:py-16 md:py-20 bg-background relative overflow-hidden">
       {/* Decorative elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-teal-100 rounded-full blur-3xl opacity-20" />
-      <div className="absolute bottom-0 left-0 w-80 h-80 bg-cyan-100 rounded-full blur-3xl opacity-20" />
+      <div className="absolute top-0 right-0 w-96 h-96  rounded-full blur-3xl opacity-20" />
+      <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full blur-3xl opacity-20" />
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
@@ -140,9 +141,9 @@ const ProductCategories = () => {
         {/* Categories Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {categories.map((category) => (
-            <a
+            <Link 
               key={category.id}
-              href={`/products/${category.name.toLowerCase().replace(" ", "-")}`}
+              to={`/products/${category.name.toLowerCase().replace(" ", "-")}`}
               className="group"
             >
               <div className="relative bg-card rounded-2xl p-6 sm:p-8 shadow-sm border hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden">
@@ -166,7 +167,7 @@ const ProductCategories = () => {
                   </div>
                 </div>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       </div>
