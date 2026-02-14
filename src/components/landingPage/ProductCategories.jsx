@@ -131,7 +131,7 @@ const ProductCategories = () => {
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-10 sm:mb-14">
-          <span className="text-teal-500 font-semibold tracking-wider text-sm uppercase">Our Products</span>
+          <span className="text-teal-500 font-semibold tracking-wider text-lg uppercase">Our Products</span>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mt-3 text-foreground">Browse By Category</h2>
           <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
             Explore our wide range of premium home appliances designed to make your life easier and more comfortable.
