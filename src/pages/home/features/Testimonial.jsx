@@ -1,7 +1,9 @@
-"use client"
+ 
 
-import { useEffect, useState, useRef } from "react"
-import { Quote, ChevronLeft, ChevronRight } from "lucide-react"
+import { useState, useRef, useEffect } from "react"
+import { Quote, ChevronLeft, ChevronRight } from "@/assets/icons/icons"
+import { useIntersectionObserver } from "@/hooks/useIntersectionObserver"
+import SectionHeader from "@/components/ui/section-header"
 
 const testimonials = [
   {
@@ -158,14 +160,9 @@ function CarouselLayout({ testimonials, isVisible }) {
       <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-teal-50/80 to-transparent z-10 pointer-events-none" />
       <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-teal-50/80 to-transparent z-10 pointer-events-none" />
 
-      {/* Scrollable Container */}
       <div
         ref={scrollRef}
         className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 px-2 scrollbar-hide"
-        style={{
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-        }}
       >
         {testimonials.map((testimonial, index) => (
           <TestimonialCard
@@ -177,13 +174,6 @@ function CarouselLayout({ testimonials, isVisible }) {
           />
         ))}
       </div>
-
-      {/* Custom scrollbar hide for webkit */}
-      <style jsx>{`
-        div::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
     </div>
   )
 }
@@ -205,54 +195,26 @@ function GridLayout({ testimonials, isVisible }) {
 }
 
 const TestimonialsSection = () => {
-  const [isVisible, setIsVisible] = useState(false)
-  const sectionRef = useRef(null)
+  const { ref: sectionRef, isVisible } = useIntersectionObserver({ threshold: 0.2 })
   const isCarouselMode = testimonials.length > 3
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-          observer.disconnect()
-        }
-      },
-      { threshold: 0.2 }
-    )
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current)
-    }
-
-    return () => observer.disconnect()
-  }, [])
 
   return (
     <section
       ref={sectionRef}
       className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-teal-50/50 to-background relative overflow-hidden"
     >
-      {/* Decorative elements */}
       <div className="absolute top-20 left-10 w-64 h-64 bg-teal-200 rounded-full blur-3xl opacity-20" />
       <div className="absolute bottom-20 right-10 w-80 h-80 bg-cyan-200 rounded-full blur-3xl opacity-20" />
 
       <div className="container mx-auto px-4 relative z-10">
-        {/* Section Header */}
-        <div
-          className={`text-center mb-10 sm:mb-14 transition-all duration-700 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          }`}
-        >
-          <span className="text-teal-500 font-semibold tracking-wider text-sm uppercase">
-            Testimonials
-          </span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mt-3 text-foreground">
-            What Our Clients Say
-          </h2>
-          <p className="text-muted-foreground mt-3 max-w-2xl mx-auto text-sm sm:text-base">
-            Hear from our satisfied customers about their experience with our professional appliance services.
-          </p>
-        </div>
+        <SectionHeader
+          badge="Testimonials"
+          title="What Our Clients Say"
+          description="Hear from our satisfied customers about their experience with our professional appliance services."
+          animate
+          isVisible={isVisible}
+          className="mb-10 sm:mb-14"
+        />
 
         {/* Conditional Layout: Grid or Carousel */}
         {isCarouselMode ? (

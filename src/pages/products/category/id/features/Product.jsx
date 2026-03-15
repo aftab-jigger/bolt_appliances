@@ -1,13 +1,13 @@
-"use client"
+ 
 
 import { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
 import {Link} from "react-router-dom" 
-import { 
-  ChevronLeft, 
+import {
+  ChevronLeft,
   ChevronRight,
-  Star, 
-  ShoppingCart, 
+  Star,
+  ShoppingCart,
   Share2,
   Home,
   Minus,
@@ -15,27 +15,11 @@ import {
   Check,
   Truck,
   Shield,
-  RotateCcw
-} from "lucide-react"
+  RotateCcw,
+  ProductImagePlaceholder,
+} from "@/assets/icons/icons"
 import { Button } from "@/components/ui/button"
-import { getProductById, getCategoryBySlug, categoryConfig } from "../../../../lib/data"
-
-// Product Image Component
-function ProductImage() {
-  return (
-    <svg viewBox="0 0 200 200" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-      <rect width="200" height="200" fill="#f0fdfa" />
-      <rect x="40" y="30" width="120" height="140" rx="10" fill="#e0f2fe" stroke="#0891b2" strokeWidth="3" />
-      <circle cx="100" cy="90" r="35" fill="#cffafe" stroke="#0891b2" strokeWidth="2" />
-      <circle cx="100" cy="90" r="25" fill="#a5f3fc" stroke="#0891b2" strokeWidth="1.5" />
-      <circle cx="100" cy="90" r="12" fill="#67e8f9" />
-      <rect x="55" y="140" width="90" height="20" rx="4" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1" />
-      <circle cx="75" cy="150" r="4" fill="#0891b2" />
-      <circle cx="100" cy="150" r="4" fill="#0891b2" />
-      <circle cx="125" cy="150" r="4" fill="#0891b2" />
-    </svg>
-  )
-}
+import { getProductById, getCategoryBySlug, categoryConfig } from "@/lib/data"
 
 // Star Rating Component
 function StarRating({ rating, reviews, size = "default" }) {
@@ -95,7 +79,7 @@ function ImageGallery() {
       {/* Main Image */}
       <div className="relative bg-gradient-to-br from-teal-50 to-cyan-50 rounded-2xl p-4 sm:p-8 overflow-hidden group">
         <div className="aspect-square max-w-md mx-auto">
-          <ProductImage />
+          <ProductImagePlaceholder className="w-full h-full" />
         </div>
         
         {/* Navigation Arrows */}
@@ -126,7 +110,7 @@ function ImageGallery() {
             }`}
           >
             <div className="w-full h-full bg-gradient-to-br from-teal-50 to-cyan-50 p-1">
-              <ProductImage />
+              <ProductImagePlaceholder className="w-full h-full" />
             </div>
           </button>
         ))}

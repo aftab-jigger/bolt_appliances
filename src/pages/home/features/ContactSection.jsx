@@ -1,32 +1,19 @@
-"use client"
+ 
 
-import { useEffect, useState, useRef } from "react"
-import { ArrowRight, Clock, Phone, Mail } from "lucide-react"
+import { ArrowRight, Clock } from "@/assets/icons/icons"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
+import { useIntersectionObserver } from "@/hooks/useIntersectionObserver"
+import SectionHeader from "@/components/ui/section-header"
 
+const workingHours = [
+  { label: "Mon - Fri: 09:30 AM - 06:00 PM" },
+  { label: "Saturday: 10:00 AM - 04:00 PM" },
+  { label: "Sunday: 10:00 AM - 02:00 PM" },
+]
 
 const ContactSection = () => {
-  const [isVisible, setIsVisible] = useState(false)
-  const sectionRef = useRef(null)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-          observer.disconnect()
-        }
-      },
-      { threshold: 0.2 }
-    )
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current)
-    }
-
-    return () => observer.disconnect()
-  }, [])
+  const { ref: sectionRef, isVisible } = useIntersectionObserver({ threshold: 0.2 })
 
   return (
     <section
@@ -94,49 +81,31 @@ const ContactSection = () => {
       <div className="absolute top-20 right-20 w-48 h-48 bg-cyan-200 rounded-full blur-3xl opacity-20" />
 
       <div className="container mx-auto px-4 relative z-10">
-        <div
-          className={`text-center max-w-4xl mx-auto transition-all duration-700 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          }`}
-        >
-          <span className="text-teal-500 font-semibold tracking-wider text-sm uppercase">
-            Contact Us
-          </span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mt-3 mb-4 sm:mb-6">
-            Get In Touch With Us
-          </h2>
-          <p className="text-muted-foreground text-base sm:text-lg md:text-xl mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto">
-            Have questions about our services? Need a repair estimate? Our team is ready to help you with all your home appliance needs.
-          </p>
-          
-          {/* Working Hours */}
+        <div className="max-w-4xl mx-auto">
+          <SectionHeader
+            badge="Contact Us"
+            title="Get In Touch With Us"
+            description="Have questions about our services? Need a repair estimate? Our team is ready to help you with all your home appliance needs."
+            animate
+            isVisible={isVisible}
+            className="mb-8 sm:mb-10"
+          />
           <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-8 sm:mb-10">
-            <div className="inline-flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-md border">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center">
-                <Clock className="h-3.5 w-3.5 text-white" />
-              </div>
-              <span className="text-foreground font-medium text-xs sm:text-sm">Mon - Fri: 09:30 AM - 06:00 PM</span>
-            </div>
-            <div className="inline-flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-md border">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center">
-                <Clock className="h-3.5 w-3.5 text-white" />
-              </div>
-              <span className="text-foreground font-medium text-xs sm:text-sm">Saturday: 10:00 AM - 04:00 PM</span>
-            </div>
-            <div className="inline-flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-md border">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center">
-                <Clock className="h-3.5 w-3.5 text-white" />
-              </div>
-              <span className="text-foreground font-medium text-xs sm:text-sm">Sunday: 10:00 AM - 02:00 PM</span>
-            </div>
-          </div>
-
-          {/* CTA Button */}
-          <div>
-            <Link to="/contact">
-              <Button
-                className="px-10 sm:px-12 py-6 sm:py-7 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white rounded-xl font-semibold text-base sm:text-lg shadow-xl hover:shadow-2xl transition-all duration-300 group"
+            {workingHours.map(({ label }) => (
+              <div
+                key={label}
+                className="inline-flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-md border"
               >
+                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center flex-shrink-0">
+                  <Clock className="h-3.5 w-3.5 text-white" />
+                </div>
+                <span className="text-foreground font-medium text-xs sm:text-sm">{label}</span>
+              </div>
+            ))}
+          </div>
+          <div className="text-center">
+            <Link to="/contact">
+              <Button className="px-10 sm:px-12 py-6 sm:py-7 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white rounded-xl font-semibold text-base sm:text-lg shadow-xl hover:shadow-2xl transition-all duration-300 group">
                 Contact Us
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>

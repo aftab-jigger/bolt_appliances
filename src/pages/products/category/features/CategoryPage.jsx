@@ -1,61 +1,28 @@
-"use client"
+ 
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import { useParams } from "react-router-dom"
 import {Link} from "react-router-dom"
-import { 
-  ChevronDown, 
-  ChevronLeft, 
-  ChevronRight, 
-  Star, 
-  ShoppingCart, 
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ShoppingCart,
   Share2,
   X,
   SlidersHorizontal,
-  Home
-} from "lucide-react"
-import { Button } from "../../ui/button"
+  Home,
+  ProductImagePlaceholder,
+} from "@/assets/icons/icons"
+import { Button } from "@/components/ui/button"
+import StarRating from "@/components/ui/star-rating"
 import { 
   products, 
   categoryConfig, 
   filterDefinitions, 
   getCategoryBySlug,
   getCategorySlug 
-} from "../../../lib/data"
-
-// Star Rating Component
-function StarRating({ rating, reviews }) {
-  return (
-    <div className="flex items-center gap-1.5">
-      <div className="flex gap-0.5">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star
-            key={star}
-            className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${
-              star <= Math.floor(rating)
-                ? "fill-amber-400 text-amber-400"
-                : "fill-gray-200 text-gray-200"
-            }`}
-          />
-        ))}
-      </div>
-      <span className="text-xs sm:text-sm text-muted-foreground">({reviews})</span>
-    </div>
-  )
-}
-
-// Product Image Placeholder
-function ProductImage() {
-  return (
-    <svg viewBox="0 0 200 200" className="w-full h-full">
-      <rect width="200" height="200" fill="#f0fdfa" />
-      <rect x="50" y="40" width="100" height="120" rx="8" fill="#99f6e4" />
-      <rect x="60" y="55" width="80" height="60" rx="4" fill="#2dd4bf" />
-      <circle cx="100" cy="140" r="8" fill="#14b8a6" />
-      <rect x="70" y="50" width="60" height="4" rx="2" fill="#5eead4" />
-    </svg>
-  )
-}
+} from "@/lib/data"
 
 // Product Card Component
 function ProductCard({ product }) {
@@ -70,7 +37,7 @@ function ProductCard({ product }) {
         <div className="relative z-10">
           <div className="relative overflow-hidden bg-gradient-to-br from-teal-50 to-cyan-50 p-3 sm:p-4">
             <div className="aspect-square group-hover:scale-105 transition-transform duration-300">
-              <ProductImage />
+              <ProductImagePlaceholder className="w-full h-full" />
             </div>
             {product.originalPrice > product.price && (
               <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-gradient-to-r from-teal-500 to-cyan-500 text-white text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full">

@@ -1,59 +1,20 @@
-"use client"
+ 
 
 import { useState, useRef, useCallback } from "react"
 import { Link } from "react-router-dom"
-import { 
-  ChevronDown, 
-  ChevronLeft, 
+import {
+  ChevronDown,
+  ChevronLeft,
   ChevronRight,
-  Star, 
-  ShoppingCart, 
+  ShoppingCart,
   Share2,
   X,
-  SlidersHorizontal
-} from "lucide-react"
+  SlidersHorizontal,
+  ProductImagePlaceholder,
+} from "@/assets/icons/icons"
 import { Button } from "@/components/ui/button"
+import StarRating from "@/components/ui/star-rating"
 import { products, getCategorySlug } from "@/lib/data"
-
-// Product placeholder SVG
-function ProductImage() {
-  return (
-    <svg viewBox="0 0 200 200" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-      <rect width="200" height="200" fill="#f0fdfa" />
-      <rect x="40" y="30" width="120" height="140" rx="10" fill="#e0f2fe" stroke="#0891b2" strokeWidth="3" />
-      <circle cx="100" cy="90" r="35" fill="#cffafe" stroke="#0891b2" strokeWidth="2" />
-      <circle cx="100" cy="90" r="25" fill="#a5f3fc" stroke="#0891b2" strokeWidth="1.5" />
-      <circle cx="100" cy="90" r="12" fill="#67e8f9" />
-      <rect x="55" y="140" width="90" height="20" rx="4" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1" />
-      <circle cx="75" cy="150" r="4" fill="#0891b2" />
-      <circle cx="100" cy="150" r="4" fill="#0891b2" />
-      <circle cx="125" cy="150" r="4" fill="#0891b2" />
-    </svg>
-  )
-}
-
-// Star Rating Component
-function StarRating({ rating, reviews }) {
-  return (
-    <div className="flex items-center gap-2">
-      <div className="flex gap-0.5">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star
-            key={star}
-            className={`w-4 h-4 ${
-              star <= Math.floor(rating)
-                ? "fill-amber-400 text-amber-400"
-                : star - 0.5 <= rating
-                ? "fill-amber-400/50 text-amber-400"
-                : "fill-gray-200 text-gray-200"
-            }`}
-          />
-        ))}
-      </div>
-      <span className="text-sm text-muted-foreground">({reviews})</span>
-    </div>
-  )
-}
 
 // Product Card Component
 function ProductCard({ product }) {
@@ -70,7 +31,7 @@ function ProductCard({ product }) {
         {/* Product Image */}
         <div className="relative overflow-hidden bg-gradient-to-br from-teal-50 to-cyan-50 p-3 sm:p-4">
           <div className="aspect-square group-hover:scale-105 transition-transform duration-300">
-            <ProductImage />
+            <ProductImagePlaceholder className="w-full h-full" />
           </div>
           {/* Discount Badge */}
           {product.originalPrice > product.price && (
@@ -91,7 +52,7 @@ function ProductCard({ product }) {
 
           {/* Rating */}
           <div className="mb-2 sm:mb-3">
-            <StarRating rating={product.rating} reviews={product.reviews} />
+            <StarRating rating={product.rating} reviews={product.reviews} className="mb-2 sm:mb-3" />
           </div>
 
           {/* Price */}
