@@ -1,44 +1,29 @@
 import { Routes, Route } from "react-router-dom";
+import ScrollToTop from "./components/ScrollToTop";
 import Navbar from "./components/layout/Navbar/Navbar";
-import AboutSection from "./components/landingPage/AboutSection";
-import Hero from "./components/landingPage/Hero";
-import StatisticsSection from "./components/landingPage/StatisticsSection";
-import ProductCategories from "./components/landingPage/ProductCategories";
-import Testimonial from "./components/landingPage/Testimonial";
-import ContactSection from "./components/landingPage/ContactSection";
-import Services from "./components/service/Services";
-import About from "./components/about/About";
-import ProductList from "./components/products/ProductList";
-import ContactUs from "./components/contact/ContactUs";
-import CategoryPage from "./components/products/category/CategoryPage";
-import Product from "./components/products/category/id/Product";
-
-const HomePage = () => (
-  <>
-    <Hero />
-    <ProductCategories />
-    <AboutSection />
-    <StatisticsSection />
-    <Testimonial />
-    <ContactSection />
-  </>
-);
+import Home from "./pages/home";
+import Services from "./pages/service";
+import About from "./pages/about";
+import Products from "./pages/products";
+import Contact from "./pages/contact";
+import Category from "./pages/products/category";
+import ProductPage from "./pages/products/category/id";
 
 const App = () => {
   return (
     <>
+      <ScrollToTop />
       <Navbar />
       <main>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<Home />} />
           <Route path="/services" element={<Services />} />
           <Route path="/about" element={<About />} />
-          <Route path="/products" element={<ProductList />} />
-          <Route path="/contact" element={<ContactUs />} />
-          <Route path="*" element={<HomePage />} />
-          <Route path="/products/:category" element={<CategoryPage />} />
-          <Route path="/products/:category/:id" element={<Product />} />
-
+          <Route path="/products" element={<Products />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="*" element={<Home />} />
+          <Route path="/products/:category" element={<Category />} />
+          <Route path="/products/:category/:id" element={<ProductPage />} />
         </Routes>
       </main>
     </>

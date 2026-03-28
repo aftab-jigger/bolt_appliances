@@ -1,16 +1,27 @@
-import { ChevronsRight, RotateCcw, Users } from "lucide-react";
+import { ChevronsRight, RotateCcw, Users } from "@/assets/icons/icons";
 import { Link } from "react-router-dom";
+
+const aboutFeatures = [
+  {
+    icon: RotateCcw,
+    title: "Years Of Experience",
+    description: "15+ years serving customers",
+  },
+  {
+    icon: Users,
+    title: "Expert Staff",
+    description: "Certified professionals",
+  },
+];
 
 const AboutSection = () => {
   return (
     <section className="py-12 sm:py-16 md:py-20 bg-background relative overflow-hidden">
-      {/* Decorative background elements */}
       <div className="absolute top-20 right-0 w-72 h-72 bg-teal-100 rounded-full blur-3xl opacity-30" />
       <div className="absolute bottom-20 left-0 w-96 h-96 bg-cyan-100 rounded-full blur-3xl opacity-30" />
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
-          {/* Left Content */}
           <div className="w-full lg:w-1/2 order-2 lg:order-1">
             <span className="text-teal-500 font-semibold tracking-wider text-sm uppercase">
               About Us
@@ -27,7 +38,6 @@ const AboutSection = () => {
               repair or install your appliances.
             </p>
 
-            {/* Read More Link */}
             <Link
               to="/about"
               className="inline-flex items-center gap-2 text-foreground font-semibold group border-l-4 border-teal-500 pl-4 hover:text-teal-600 transition-colors"
@@ -36,30 +46,23 @@ const AboutSection = () => {
               <ChevronsRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Link>
 
-            {/* Feature Cards */}
             <div className="grid grid-cols-2 gap-4 mt-10">
-              <div className="bg-card rounded-xl p-4 sm:p-6 shadow-sm border hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center mb-3 sm:mb-4">
-                  <RotateCcw className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
+              {aboutFeatures.map(({ icon: Icon, title, description }) => (
+                <div
+                  key={title}
+                  className="bg-card rounded-xl p-4 sm:p-6 shadow-sm border hover:shadow-md transition-shadow"
+                >
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center mb-3 sm:mb-4">
+                    <Icon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
+                  </div>
+                  <h3 className="font-bold text-foreground text-sm sm:text-base">
+                    {title}
+                  </h3>
+                  <p className="text-muted-foreground text-xs sm:text-sm mt-1 hidden sm:block">
+                    {description}
+                  </p>
                 </div>
-                <h3 className="font-bold text-foreground text-sm sm:text-base">
-                  Years Of Experience
-                </h3>
-                <p className="text-muted-foreground text-xs sm:text-sm mt-1 hidden sm:block">
-                  15+ years serving customers
-                </p>
-              </div>
-              <div className="bg-card rounded-xl p-4 sm:p-6 shadow-sm border hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center mb-3 sm:mb-4">
-                  <Users className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
-                </div>
-                <h3 className="font-bold text-foreground text-sm sm:text-base">
-                  Expert Staff
-                </h3>
-                <p className="text-muted-foreground text-xs sm:text-sm mt-1 hidden sm:block">
-                  Certified professionals
-                </p>
-              </div>
+              ))}
             </div>
           </div>
 
