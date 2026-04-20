@@ -1,28 +1,30 @@
  
 
-import { useState, useRef, useCallback } from "react"
-import { Link } from "react-router-dom"
+import { useState, useRef, useCallback, useMemo } from "react"
+import { Link, useNavigate } from "react-router-dom"
 import {
+  ArrowRight,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  ShoppingCart,
   Share2,
   X,
   SlidersHorizontal,
-  ProductImagePlaceholder,
 } from "@/assets/icons/icons"
 import { Button } from "@/components/ui/button"
 import StarRating from "@/components/ui/star-rating"
+import ProductImageWithFallback from "@/components/ui/product-image-with-fallback"
 import { products, getCategorySlug } from "@/lib/data"
 
 // Product Card Component
 function ProductCard({ product }) {
   const [showFeatures, setShowFeatures] = useState(false)
   const categorySlug = getCategorySlug(product.category)
+  const navigate = useNavigate()
+  const productDetailPath = `/products/${categorySlug}/${product.id}`
 
   return (
-    <Link to={`/products/${categorySlug}/${product.id}`} className="block">
+    <Link to={productDetailPath} className="block">
     <div className="group relative bg-card rounded-xl sm:rounded-2xl shadow-sm border hover:shadow-xl transition-all duration-300 hover:-translate-y-1 sm:hover:-translate-y-2 overflow-hidden">
       {/* Background gradient on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -30,8 +32,15 @@ function ProductCard({ product }) {
       <div className="relative z-10">
         {/* Product Image */}
         <div className="relative overflow-hidden bg-gradient-to-br from-teal-50 to-cyan-50 p-3 sm:p-4">
-          <div className="aspect-square group-hover:scale-105 transition-transform duration-300">
-            <ProductImagePlaceholder className="w-full h-full" />
+          <div className="h-48 sm:h-56 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+            <ProductImageWithFallback
+              src={product.image}
+              alt={product.name}
+              className="w-full h-full object-cover rounded-lg"
+              loading="lazy"
+              decoding="async"
+              sizes="(max-width: 640px) 92vw, (max-width: 1280px) 46vw, 30vw"
+            />
           </div>
           {/* Discount Badge */}
           {product.originalPrice > product.price && (
@@ -97,10 +106,14 @@ function ProductCard({ product }) {
           <div className="flex gap-2">
             <Button
               className="flex-1 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white text-xs sm:text-sm h-8 sm:h-10"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                navigate(productDetailPath)
+              }}
             >
-              <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
-              Add to Cart
+              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
+              Buy Now
             </Button>
             <Button
               variant="outline"
@@ -475,18 +488,39 @@ const ProductList = () => {
     setCurrentPage(1)
   }, [])
 
+  const hasActiveFilters = useMemo(
+    () =>
+      filters.category !== "All" ||
+      filters.brand !== "All" ||
+      filters.priceRange.label !== "All Prices",
+    [filters],
+  )
+
   // Filter products
-  const filteredProducts = products.filter((product) => {
-    if (filters.category !== "All" && product.category !== filters.category) return false
-    if (filters.brand !== "All" && product.brand !== filters.brand) return false
-    if (product.price < filters.priceRange.min || product.price > filters.priceRange.max) return false
-    return true
-  })
+  const filteredProducts = useMemo(
+    () =>
+      products.filter((product) => {
+        if (filters.category !== "All" && product.category !== filters.category) return false
+        if (filters.brand !== "All" && product.brand !== filters.brand) return false
+        if (product.price < filters.priceRange.min || product.price > filters.priceRange.max) return false
+        return true
+      }),
+    [filters],
+  )
 
   // Paginate
-  const totalPages = Math.ceil(filteredProducts.length / productsPerPage)
-  const startIndex = (currentPage - 1) * productsPerPage
-  const paginatedProducts = filteredProducts.slice(startIndex, startIndex + productsPerPage)
+  const totalPages = useMemo(
+    () => Math.ceil(filteredProducts.length / productsPerPage),
+    [filteredProducts.length, productsPerPage],
+  )
+  const startIndex = useMemo(
+    () => (currentPage - 1) * productsPerPage,
+    [currentPage, productsPerPage],
+  )
+  const paginatedProducts = useMemo(
+    () => filteredProducts.slice(startIndex, startIndex + productsPerPage),
+    [filteredProducts, startIndex, productsPerPage],
+  )
 
   return (
     <main className="min-h-screen bg-background">
@@ -531,7 +565,7 @@ const ProductList = () => {
           >
             <SlidersHorizontal className="w-4 h-4 mr-2" />
             Filters
-            {(filters.category !== "All" || filters.brand !== "All" || filters.priceRange.label !== "All Prices") && (
+            {hasActiveFilters && (
               <span className="ml-2 bg-teal-500 text-white text-xs px-2 py-0.5 rounded-full">Active</span>
             )}
           </Button>
