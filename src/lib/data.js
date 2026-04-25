@@ -100,6 +100,69 @@ export const filterDefinitions = {
   // },
 }
 
+const productImageLibrary = {
+  "Microwave Oven": [
+    "https://images.pexels.com/photos/6996034/pexels-photo-6996034.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/4108710/pexels-photo-4108710.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/5591653/pexels-photo-5591653.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/5825364/pexels-photo-5825364.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  ],
+  Dishwasher: [
+    "https://images.pexels.com/photos/5824519/pexels-photo-5824519.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/5824894/pexels-photo-5824894.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/4239033/pexels-photo-4239033.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/4907060/pexels-photo-4907060.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  ],
+  Dryer: [
+    "https://images.pexels.com/photos/5591826/pexels-photo-5591826.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/5591688/pexels-photo-5591688.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/4239031/pexels-photo-4239031.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/5825563/pexels-photo-5825563.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  ],
+  Refrigerator: [
+    "https://images.pexels.com/photos/5825362/pexels-photo-5825362.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/5824514/pexels-photo-5824514.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/5824885/pexels-photo-5824885.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/4239091/pexels-photo-4239091.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  ],
+  Cooker: [
+    "https://images.pexels.com/photos/4108270/pexels-photo-4108270.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/4252136/pexels-photo-4252136.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/4108294/pexels-photo-4108294.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/4108274/pexels-photo-4108274.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  ],
+  Hobs: [
+    "https://images.pexels.com/photos/4108719/pexels-photo-4108719.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/5591595/pexels-photo-5591595.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/5591647/pexels-photo-5591647.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/4108278/pexels-photo-4108278.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  ],
+}
+
+function optimizeImageUrl(url, width = 900, quality = 70) {
+  const [basePath] = url.split("?")
+  return `${basePath}?auto=compress&cs=tinysrgb&w=${width}&q=${quality}`
+}
+
+function getProductImages(category, seed) {
+  const categoryImages = productImageLibrary[category] || []
+  if (categoryImages.length === 0) return []
+
+  const mainIndex = seed % categoryImages.length
+  const secondaryIndex = (seed + 1) % categoryImages.length
+  const thirdIndex = (seed + 2) % categoryImages.length
+  const fourthIndex = (seed + 3) % categoryImages.length
+
+  const selectedImages = [
+    categoryImages[mainIndex],
+    categoryImages[secondaryIndex],
+    categoryImages[thirdIndex],
+    categoryImages[fourthIndex],
+  ]
+
+  return selectedImages.map((image, index) => optimizeImageUrl(image, index === 0 ? 1100 : 800))
+}
+
 // Generate products for all categories
 const generateProducts = () => {
   const categories = Object.keys(categoryConfig)
@@ -116,6 +179,8 @@ const generateProducts = () => {
       const brand = brands[i % brands.length]
       const basePrice = 299 + Math.floor(Math.random() * 1200)
       const hasDiscount = Math.random() > 0.3
+      const productImages = getProductImages(category, i)
+      const cardImage = productImages[0] ? optimizeImageUrl(productImages[0], 700) : ""
 
       allProducts.push({
         id: id++,
@@ -129,6 +194,8 @@ const generateProducts = () => {
         reviews: 10 + Math.floor(Math.random() * 490),
         category: category,
         brand: brand,
+        image: cardImage,
+        images: productImages,
         features: features.slice(0, 4),
         specifications: {
           dimensions: "60 x 85 x 60 cm",

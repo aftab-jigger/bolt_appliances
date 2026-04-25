@@ -9,6 +9,7 @@ import {
   Star,
   ShoppingCart,
   Share2,
+  WhatsAppIcon,
   Home,
   Minus,
   Plus,
@@ -19,6 +20,7 @@ import {
   ProductImagePlaceholder,
 } from "@/assets/icons/icons"
 import { Button } from "@/components/ui/button"
+import ProductImageWithFallback from "@/components/ui/product-image-with-fallback"
 import { getProductById, getCategoryBySlug, categoryConfig } from "@/lib/data"
 
 // Star Rating Component
@@ -70,16 +72,33 @@ function Breadcrumbs({ product, categorySlug, categoryName }) {
 }
 
 // Image Gallery Component
-function ImageGallery() {
+function ImageGallery({ product }) {
   const [selectedImage, setSelectedImage] = useState(0)
-  const thumbnails = [0, 1, 2, 3]
+  const galleryImages =
+    product?.images?.length > 0
+      ? product.images
+      : product?.image
+      ? [product.image]
+      : []
+  const thumbnails = galleryImages.length > 0 ? galleryImages : [null]
 
   return (
     <div className="space-y-4">
       {/* Main Image */}
       <div className="relative bg-gradient-to-br from-teal-50 to-cyan-50 rounded-2xl p-4 sm:p-8 overflow-hidden group">
         <div className="aspect-square max-w-md mx-auto">
-          <ProductImagePlaceholder className="w-full h-full" />
+          {thumbnails[selectedImage] ? (
+            <ProductImageWithFallback
+              src={thumbnails[selectedImage]}
+              alt={product?.name || "Product image"}
+              className="w-full h-full object-contain"
+              loading="eager"
+              decoding="async"
+              sizes="(max-width: 1024px) 92vw, 48vw"
+            />
+          ) : (
+            <ProductImagePlaceholder className="w-full h-full" />
+          )}
         </div>
         
         {/* Navigation Arrows */}
@@ -99,9 +118,9 @@ function ImageGallery() {
 
       {/* Thumbnails */}
       <div className="flex gap-3 justify-center">
-        {thumbnails.map((index) => (
+        {thumbnails.map((image, index) => (
           <button
-            key={index}
+            key={`${image || "placeholder"}-${index}`}
             onClick={() => setSelectedImage(index)}
             className={`w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 hover:scale-105 ${
               selectedImage === index 
@@ -110,7 +129,17 @@ function ImageGallery() {
             }`}
           >
             <div className="w-full h-full bg-gradient-to-br from-teal-50 to-cyan-50 p-1">
-              <ProductImagePlaceholder className="w-full h-full" />
+              {image ? (
+                <ProductImageWithFallback
+                  src={image}
+                  alt={`${product?.name || "Product"} preview ${index + 1}`}
+                  className="w-full h-full object-contain"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <ProductImagePlaceholder className="w-full h-full" />
+              )}
             </div>
           </button>
         ))}
@@ -434,7 +463,7 @@ export default function CategoryProductDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Left: Image Gallery */}
             <div>
-              <ImageGallery />
+              <ImageGallery product={product} />
             </div>
 
             {/* Right: Product Details */}
@@ -500,12 +529,23 @@ export default function CategoryProductDetailPage() {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-3">
-                <Button 
-                  className="flex-1 h-12 sm:h-14 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white text-base font-semibold"
+              
+                <a
+                  href={`https://wa.me/447853580404?text=${encodeURIComponent(`Hi, I would like more information about this product:\n\n${product.name} (${product.model})\n\nPlease share details and availability.`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex"
+                  aria-label="Ask on WhatsApp"
                 >
-                  <ShoppingCart className="w-5 h-5 mr-2" />
-                  Add to Cart
-                </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-12 sm:h-14 px-4 sm:px-6 border-green-200 hover:bg-green-50 hover:border-green-300 bg-transparent text-green-700"
+                  >
+                    <WhatsAppIcon className="w-5 h-5 text-green-600 sm:mr-2" />
+                    <span className="hidden sm:inline">WhatsApp</span>
+                  </Button>
+                </a>
                 <Button
                   variant="outline"
                   className="h-12 sm:h-14 px-6 border-teal-200 hover:bg-teal-50 hover:border-teal-300 bg-transparent"

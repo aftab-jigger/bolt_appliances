@@ -1,21 +1,21 @@
  
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react"
-import { useParams } from "react-router-dom"
-import {Link} from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import {
+  ArrowRight,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  ShoppingCart,
   Share2,
   X,
   SlidersHorizontal,
   Home,
-  ProductImagePlaceholder,
 } from "@/assets/icons/icons"
 import { Button } from "@/components/ui/button"
 import StarRating from "@/components/ui/star-rating"
+import ProductImageWithFallback from "@/components/ui/product-image-with-fallback"
 import { 
   products, 
   categoryConfig, 
@@ -28,16 +28,25 @@ import {
 function ProductCard({ product }) {
   const [showFeatures, setShowFeatures] = useState(false)
   const categorySlug = getCategorySlug(product.category)
+  const navigate = useNavigate()
+  const productDetailPath = `/products/${categorySlug}/${product.id}`
 
   return (
-    <Link to={`/products/${categorySlug}/${product.id}`} className="block">
+    <Link to={productDetailPath} className="block">
       <div className="group relative bg-card rounded-xl sm:rounded-2xl shadow-sm border hover:shadow-xl transition-all duration-300 hover:-translate-y-1 sm:hover:-translate-y-2 overflow-hidden cursor-pointer">
         <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
         <div className="relative z-10">
           <div className="relative overflow-hidden bg-gradient-to-br from-teal-50 to-cyan-50 p-3 sm:p-4">
-            <div className="aspect-square group-hover:scale-105 transition-transform duration-300">
-              <ProductImagePlaceholder className="w-full h-full" />
+            <div className="h-48 sm:h-56 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+              <ProductImageWithFallback
+                src={product.image}
+                alt={product.name}
+                className="w-full h-full object-cover rounded-lg"
+                loading="lazy"
+                decoding="async"
+                sizes="(max-width: 640px) 92vw, (max-width: 1280px) 46vw, 30vw"
+              />
             </div>
             {product.originalPrice > product.price && (
               <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-gradient-to-r from-teal-500 to-cyan-500 text-white text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full">
@@ -92,10 +101,11 @@ function ProductCard({ product }) {
                 onClick={(e) => {
                   e.preventDefault()
                   e.stopPropagation()
+                  navigate(productDetailPath)
                 }}
               >
-                <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
-                Add to Cart
+                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
+                Buy Now
               </Button>
               <Button
                 variant="outline"
@@ -348,11 +358,13 @@ const CategoryPage = () => {
   const productsPerPage = 12
 
   // Reset filters when category changes by updating the key
-  if (filterKey !== categorySlug) {
-    setFilterKey(categorySlug)
-    setFiltersState(initialFilters)
-    setCurrentPage(1)
-  }
+  useEffect(() => {
+    if (filterKey !== categorySlug) {
+      setFilterKey(categorySlug)
+      setFiltersState(initialFilters)
+      setCurrentPage(1)
+    }
+  }, [filterKey, categorySlug, initialFilters])
 
   // Wrapper function to set filters and reset page
   // Handles both function updates and direct values
@@ -387,43 +399,63 @@ const CategoryPage = () => {
   }, [])
 
   // Filter products by category
-  const categoryProducts = products.filter(p => p.category === categoryName)
+  const categoryProducts = useMemo(
+    () => products.filter((p) => p.category === categoryName),
+    [categoryName],
+  )
 
   // Apply filters
-  const filteredProducts = categoryProducts.filter(product => {
-    // Brand filter
-    if (filters.brand && filters.brand !== "All" && product.brand !== filters.brand) {
-      return false
-    }
-    // Price filter
-    if (filters.price && filters.price.label !== "All Prices") {
-      if (product.price < filters.price.min || product.price > filters.price.max) {
-        return false
-      }
-    }
-    return true
-  })
+  const filteredProducts = useMemo(
+    () =>
+      categoryProducts.filter((product) => {
+        // Brand filter
+        if (filters.brand && filters.brand !== "All" && product.brand !== filters.brand) {
+          return false
+        }
+        // Price filter
+        if (filters.price && filters.price.label !== "All Prices") {
+          if (product.price < filters.price.min || product.price > filters.price.max) {
+            return false
+          }
+        }
+        return true
+      }),
+    [categoryProducts, filters],
+  )
 
   // Pagination
-  const totalPages = Math.ceil(filteredProducts.length / productsPerPage)
-  const startIndex = (currentPage - 1) * productsPerPage
-  const paginatedProducts = filteredProducts.slice(startIndex, startIndex + productsPerPage)
+  const totalPages = useMemo(
+    () => Math.ceil(filteredProducts.length / productsPerPage),
+    [filteredProducts.length, productsPerPage],
+  )
+  const startIndex = useMemo(
+    () => (currentPage - 1) * productsPerPage,
+    [currentPage, productsPerPage],
+  )
+  const paginatedProducts = useMemo(
+    () => filteredProducts.slice(startIndex, startIndex + productsPerPage),
+    [filteredProducts, startIndex, productsPerPage],
+  )
 
   const clearFilters = () => {
     setFilters(initialFilters)
     setCurrentPage(1)
   }
 
-  const hasActiveFilters = Object.keys(filters).some(key => {
-    const def = filterDefinitions[key]
-    if (!def) return false
-    const defaultVal = def.defaultValue
-    const currentVal = filters[key]
-    if (typeof defaultVal === "object") {
-      return currentVal?.label !== defaultVal.label
-    }
-    return currentVal !== defaultVal
-  })
+  const hasActiveFilters = useMemo(
+    () =>
+      Object.keys(filters).some((key) => {
+        const def = filterDefinitions[key]
+        if (!def) return false
+        const defaultVal = def.defaultValue
+        const currentVal = filters[key]
+        if (typeof defaultVal === "object") {
+          return currentVal?.label !== defaultVal.label
+        }
+        return currentVal !== defaultVal
+      }),
+    [filters],
+  )
 
   // Handle invalid category
   if (!config) {

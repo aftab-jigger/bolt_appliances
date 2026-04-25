@@ -1,15 +1,14 @@
 import { useState } from "react";
-import { HiMenu, HiX } from "react-icons/hi";
 import NavItemMobile from "./NavItemMobile";
 import NavItemsDesktop from "./NavItemsDesktop";
-import { Menu, X, Search, ShoppingCart, User, LineChart } from "lucide-react";
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import Logo from "../../../assets/logo/Logo";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const toggleMenu = () => setIsOpen(!isOpen);
+  const toggleMenu = () => setIsOpen((prev) => !prev);
+  const closeMenu = () => setIsOpen(false);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -21,49 +20,22 @@ const Navbar = () => {
           {/* Desktop Menu */}
           <NavItemsDesktop />
 
-          {/* Desktop Actions */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" size="icon" aria-label="Search">
-              <Search className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" aria-label="Cart">
-              <ShoppingCart className="h-5 w-5" />
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="User menu">
-                  <User className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>Profile</DropdownMenuItem>
-                <DropdownMenuItem>Orders</DropdownMenuItem>
-                <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuItem>Logout</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
           {/* Mobile Menu Button */}
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="md:hidden rounded-xl border border-border/70"
             onClick={toggleMenu}
             aria-label="Toggle menu"
+            aria-expanded={isOpen}
           >
-            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            <Menu className="h-6 w-6" />
           </Button>
         </div>
-
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <NavItemMobile
-            onNavigate={() => setIsOpen(false)}
-            onClose={() => setIsOpen(false)}
-          />
-        )}
       </div>
+
+      {/* Mobile Navigation */}
+      {isOpen && <NavItemMobile onNavigate={closeMenu} onClose={closeMenu} />}
     </header>
   );
 };
