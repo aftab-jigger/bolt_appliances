@@ -3,14 +3,12 @@
 import { useRef, useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { ChevronLeft, ChevronRight } from "@/assets/icons/icons"
-import { products, getCategorySlug } from "@/lib/data"
+import { getCategorySlug } from "@/lib/data"
+import { useProducts } from "@/context/ProductsContext"
 import SectionHeader from "@/components/ui/section-header"
 import StarRating from "@/components/ui/star-rating"
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver"
 import ProductImageWithFallback from "@/components/ui/product-image-with-fallback"
-
-// Featured products: first 12 from data (replace with featured flag in data later if needed)
-const featuredProducts = products.slice(0, 12)
 
 const CARD_MIN_WIDTH = 280
 const CARD_GAP = 16
@@ -61,6 +59,8 @@ function ProductCard({ product }) {
 }
 
 export default function FeatureProduct() {
+  const { products } = useProducts()
+  const featuredProducts = products.slice(0, 12)
   const { ref: sectionRef, isVisible } = useIntersectionObserver({ threshold: 0.1 })
   const scrollRef = useRef(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
