@@ -21,7 +21,8 @@ import {
 } from "@/assets/icons/icons"
 import { Button } from "@/components/ui/button"
 import ProductImageWithFallback from "@/components/ui/product-image-with-fallback"
-import { getProductById, getCategoryBySlug, categoryConfig } from "@/lib/data"
+import { getCategoryBySlug, categoryConfig } from "@/lib/data"
+import { useProducts } from "@/context/ProductsContext"
 
 // Star Rating Component
 function StarRating({ rating, reviews, size = "default" }) {
@@ -383,6 +384,7 @@ function TabsSection({ product }) {
 
 export default function CategoryProductDetailPage() {
   const params = useParams()
+  const { getProductById, isLoading: isProductsLoading } = useProducts()
   const [product, setProduct] = useState(null)
   const [quantity, setQuantity] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
@@ -392,14 +394,13 @@ export default function CategoryProductDetailPage() {
     if (params.id && params.category) {
       const foundProduct = getProductById(params.id)
       const catName = getCategoryBySlug(params.category)
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setProduct(foundProduct)
       setCategoryName(catName || params.category)
       setIsLoading(false)
     }
-  }, [params.id, params.category])
+  }, [params.id, params.category, getProductById, isProductsLoading])
 
-  if (isLoading) {
+  if (isLoading || isProductsLoading) {
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-20">

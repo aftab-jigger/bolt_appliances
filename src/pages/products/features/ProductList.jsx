@@ -1,6 +1,6 @@
  
 
-import { useState, useRef, useCallback, useMemo } from "react"
+import { useState, useRef, useCallback, useMemo, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import {
   ArrowRight,
@@ -14,7 +14,12 @@ import {
 import { Button } from "@/components/ui/button"
 import StarRating from "@/components/ui/star-rating"
 import ProductImageWithFallback from "@/components/ui/product-image-with-fallback"
-import { products, getCategorySlug } from "@/lib/data"
+import { getCategorySlug } from "@/lib/data"
+import { useProducts } from "@/context/ProductsContext"
+import {
+  createDefaultProductFilters,
+  sanitizeProductFilters,
+} from "@/lib/productFilters"
 
 // Product Card Component
 function ProductCard({ product }) {
@@ -190,19 +195,10 @@ function ProductCard({ product }) {
 //   )
 // }
 
-// Filter constants
-const categories = ["All", "Dryer", "Dishwasher", "Refrigerator", "Microwave Oven", "Cooker", "Hobs"]
-const brands = ["All", "Samsung", "LG", "Bosch", "Whirlpool", "Siemens", "Miele"]
-const priceRanges = [
-  { label: "All Prices", min: 0, max: Infinity },
-  { label: "Under £300", min: 0, max: 300 },
-  { label: "£300 - £600", min: 300, max: 600 },
-  { label: "£600 - £1000", min: 600, max: 1000 },
-  { label: "Over £1000", min: 1000, max: Infinity },
-]
-
 // Mobile Filter Panel Component
-function MobileFilterPanel({ filters, setFilters, isOpen, onClose }) {
+function MobileFilterPanel({ filters, setFilters, filterOptions, isOpen, onClose }) {
+  const { categories, brands, priceRanges } = filterOptions
+
   if (!isOpen) return null
 
   return (
@@ -287,13 +283,7 @@ function MobileFilterPanel({ filters, setFilters, isOpen, onClose }) {
             <Button
               variant="outline"
               className="flex-1 border-teal-200 hover:bg-teal-50 hover:border-teal-300 text-teal-600 bg-transparent"
-              onClick={() =>
-                setFilters({
-                  category: "All",
-                  brand: "All",
-                  priceRange: { label: "All Prices", min: 0, max: Infinity },
-                })
-              }
+              onClick={() => setFilters(createDefaultProductFilters(filterOptions))}
             >
               Clear
             </Button>
@@ -311,7 +301,8 @@ function MobileFilterPanel({ filters, setFilters, isOpen, onClose }) {
 }
 
 // Desktop Sidebar Filter Component
-function DesktopFilterSidebar({ filters, setFilters }) {
+function DesktopFilterSidebar({ filters, setFilters, filterOptions }) {
+  const { categories, brands, priceRanges } = filterOptions
   const hasActiveFilters = filters.category !== "All" || filters.brand !== "All" || filters.priceRange.label !== "All Prices"
 
   return (
@@ -389,13 +380,7 @@ function DesktopFilterSidebar({ filters, setFilters }) {
               <Button
                 variant="outline"
                 className="w-full border-teal-200 hover:bg-teal-50 hover:border-teal-300 text-teal-600 bg-transparent"
-                onClick={() =>
-                  setFilters({
-                    category: "All",
-                    brand: "All",
-                    priceRange: { label: "All Prices", min: 0, max: Infinity },
-                  })
-                }
+                onClick={() => setFilters(createDefaultProductFilters(filterOptions))}
               >
                 <X className="w-4 h-4 mr-2" />
                 Clear Filters
@@ -469,18 +454,19 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
 }
 
 const ProductList = () => {
+  const { products, filterOptions } = useProducts()
   const [currentPage, setCurrentPage] = useState(1)
-  const [filters, setFilters] = useState({
-    category: "All",
-    brand: "All",
-    priceRange: { label: "All Prices", min: 0, max: Infinity },
-  })
+  const [filters, setFilters] = useState(() => createDefaultProductFilters(filterOptions))
   const [showMobileFilters, setShowMobileFilters] = useState(false)
   
   const [isVisible] = useState(true)
   const sectionRef = useRef(null)
   
   const productsPerPage = 15
+
+  useEffect(() => {
+    setFilters((prev) => sanitizeProductFilters(prev, filterOptions))
+  }, [filterOptions])
 
   // Wrapper function to set filters and reset page
   const handleSetFilters = useCallback((newFilters) => {
@@ -505,7 +491,7 @@ const ProductList = () => {
         if (product.price < filters.priceRange.min || product.price > filters.priceRange.max) return false
         return true
       }),
-    [filters],
+    [filters, products],
   )
 
   // Paginate
@@ -551,6 +537,7 @@ const ProductList = () => {
       <MobileFilterPanel
         filters={filters}
         setFilters={handleSetFilters}
+        filterOptions={filterOptions}
         isOpen={showMobileFilters}
         onClose={() => setShowMobileFilters(false)}
       />
@@ -581,7 +568,7 @@ const ProductList = () => {
         <div className="container mx-auto px-4">
           <div className="flex gap-8">
             {/* Desktop Sidebar Filter */}
-            <DesktopFilterSidebar filters={filters} setFilters={handleSetFilters} />
+            <DesktopFilterSidebar filters={filters} setFilters={handleSetFilters} filterOptions={filterOptions} />
 
             {/* Products Grid */}
             <div className="flex-1 min-w-0">

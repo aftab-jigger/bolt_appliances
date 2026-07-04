@@ -17,12 +17,16 @@ import { Button } from "@/components/ui/button"
 import StarRating from "@/components/ui/star-rating"
 import ProductImageWithFallback from "@/components/ui/product-image-with-fallback"
 import { 
-  products, 
   categoryConfig, 
-  filterDefinitions, 
   getCategoryBySlug,
   getCategorySlug 
 } from "@/lib/data"
+import { useProducts } from "@/context/ProductsContext"
+import {
+  buildCategoryFilterDefinitions,
+  createInitialCategoryFilters,
+  sanitizeCategoryFilters,
+} from "@/lib/productFilters"
 
 // Product Card Component
 function ProductCard({ product }) {
@@ -165,7 +169,7 @@ function FilterSection({ filterId, filterConfig, value, onChange }) {
 }
 
 // Desktop Sidebar Filter Component
-function DesktopFilterSidebar({ categoryConfig, filters, setFilters, onClear }) {
+function DesktopFilterSidebar({ categoryConfig, filterDefinitions, filters, setFilters, onClear }) {
   const activeFilters = categoryConfig?.filters || {}
   const hasActiveFilters = Object.keys(filters).some(key => {
     const def = filterDefinitions[key]
@@ -216,7 +220,7 @@ function DesktopFilterSidebar({ categoryConfig, filters, setFilters, onClear }) 
 }
 
 // Mobile Filter Panel Component
-function MobileFilterPanel({ categoryConfig, filters, setFilters, isOpen, onClose, onClear }) {
+function MobileFilterPanel({ categoryConfig, filterDefinitions, filters, setFilters, isOpen, onClose, onClear }) {
   if (!isOpen) return null
   
   const activeFilters = categoryConfig?.filters || {}
@@ -327,25 +331,26 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
 
 // Main Category Page Component
 const CategoryPage = () => {
+  const { products } = useProducts()
   const params = useParams()
   const categorySlug = params.category
   const categoryName = getCategoryBySlug(categorySlug)
   const config = categoryName ? categoryConfig[categoryName] : null
 
-  // console.log("[v0] Category Page Debug:", { categorySlug, categoryName, config: config?.title, allSlugs: Object.values(categoryConfig).map(c => c.slug) })
+  const categoryProducts = useMemo(
+    () => products.filter((p) => p.category === categoryName),
+    [categoryName, products],
+  )
 
-  // Initialize filters from config - memoized based on categorySlug
-  const initialFilters = useMemo(() => {
-    const initial = {}
-    if (config?.filters) {
-      Object.keys(config.filters).forEach(filterId => {
-        if (config.filters[filterId] && filterDefinitions[filterId]) {
-          initial[filterId] = filterDefinitions[filterId].defaultValue
-        }
-      })
-    }
-    return initial
-  }, [config])
+  const dynamicFilterDefinitions = useMemo(
+    () => buildCategoryFilterDefinitions(categoryProducts),
+    [categoryProducts],
+  )
+
+  const initialFilters = useMemo(
+    () => createInitialCategoryFilters(config, dynamicFilterDefinitions),
+    [config, dynamicFilterDefinitions],
+  )
 
   // Use categorySlug as part of the state key to reset when category changes
   const [filterKey, setFilterKey] = useState(categorySlug)
@@ -365,6 +370,10 @@ const CategoryPage = () => {
       setCurrentPage(1)
     }
   }, [filterKey, categorySlug, initialFilters])
+
+  useEffect(() => {
+    setFiltersState((prev) => sanitizeCategoryFilters(prev, dynamicFilterDefinitions))
+  }, [dynamicFilterDefinitions])
 
   // Wrapper function to set filters and reset page
   // Handles both function updates and direct values
@@ -397,12 +406,6 @@ const CategoryPage = () => {
 
     return () => observer.disconnect()
   }, [])
-
-  // Filter products by category
-  const categoryProducts = useMemo(
-    () => products.filter((p) => p.category === categoryName),
-    [categoryName],
-  )
 
   // Apply filters
   const filteredProducts = useMemo(
@@ -445,7 +448,7 @@ const CategoryPage = () => {
   const hasActiveFilters = useMemo(
     () =>
       Object.keys(filters).some((key) => {
-        const def = filterDefinitions[key]
+        const def = dynamicFilterDefinitions[key]
         if (!def) return false
         const defaultVal = def.defaultValue
         const currentVal = filters[key]
@@ -454,7 +457,7 @@ const CategoryPage = () => {
         }
         return currentVal !== defaultVal
       }),
-    [filters],
+    [filters, dynamicFilterDefinitions],
   )
 
   // Handle invalid category
@@ -510,6 +513,7 @@ const CategoryPage = () => {
       {/* Mobile Filter Panel */}
       <MobileFilterPanel
         categoryConfig={config}
+        filterDefinitions={dynamicFilterDefinitions}
         filters={filters}
         setFilters={setFilters}
         isOpen={showMobileFilters}
@@ -545,6 +549,7 @@ const CategoryPage = () => {
             {/* Desktop Sidebar Filter */}
             <DesktopFilterSidebar
               categoryConfig={config}
+              filterDefinitions={dynamicFilterDefinitions}
               filters={filters}
               setFilters={setFilters}
               onClear={clearFilters}
