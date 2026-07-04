@@ -17,8 +17,8 @@ import { Button } from "@/components/ui/button"
 import StarRating from "@/components/ui/star-rating"
 import ProductImageWithFallback from "@/components/ui/product-image-with-fallback"
 import { 
-  categoryConfig, 
   getCategoryBySlug,
+  getCategoryConfig,
   getCategorySlug 
 } from "@/lib/data"
 import { useProducts } from "@/context/ProductsContext"
@@ -331,11 +331,15 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
 
 // Main Category Page Component
 const CategoryPage = () => {
-  const { products } = useProducts()
+  const { products, isLoading } = useProducts()
   const params = useParams()
   const categorySlug = params.category
-  const categoryName = getCategoryBySlug(categorySlug)
-  const config = categoryName ? categoryConfig[categoryName] : null
+  const productCategories = useMemo(
+    () => [...new Set(products.map((product) => product.category).filter(Boolean))],
+    [products],
+  )
+  const categoryName = getCategoryBySlug(categorySlug, productCategories)
+  const config = categoryName ? getCategoryConfig(categoryName, products) : null
 
   const categoryProducts = useMemo(
     () => products.filter((p) => p.category === categoryName),
@@ -461,6 +465,14 @@ const CategoryPage = () => {
   )
 
   // Handle invalid category
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
   if (!config) {
     return (
       <>
@@ -468,7 +480,7 @@ const CategoryPage = () => {
           <div className="text-center">
             <h1 className="text-2xl font-bold text-foreground mb-4">Category Not Found</h1>
             <p className="text-muted-foreground mb-6">The category you're looking for doesn't exist.</p>
-            <Link href="/products">
+            <Link to="/products">
               <Button className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white">
                 View All Products
               </Button>

@@ -21,7 +21,7 @@ import {
 } from "@/assets/icons/icons"
 import { Button } from "@/components/ui/button"
 import ProductImageWithFallback from "@/components/ui/product-image-with-fallback"
-import { getCategoryBySlug, categoryConfig } from "@/lib/data"
+import { getCategoryBySlug, getCategorySlug } from "@/lib/data"
 import { useProducts } from "@/context/ProductsContext"
 
 // Star Rating Component
@@ -384,7 +384,7 @@ function TabsSection({ product }) {
 
 export default function CategoryProductDetailPage() {
   const params = useParams()
-  const { getProductById, isLoading: isProductsLoading } = useProducts()
+  const { getProductById, products, isLoading: isProductsLoading } = useProducts()
   const [product, setProduct] = useState(null)
   const [quantity, setQuantity] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
@@ -393,12 +393,13 @@ export default function CategoryProductDetailPage() {
   useEffect(() => {
     if (params.id && params.category) {
       const foundProduct = getProductById(params.id)
-      const catName = getCategoryBySlug(params.category)
+      const productCategories = [...new Set(products.map((item) => item.category).filter(Boolean))]
+      const catName = getCategoryBySlug(params.category, productCategories)
       setProduct(foundProduct)
       setCategoryName(catName || params.category)
       setIsLoading(false)
     }
-  }, [params.id, params.category, getProductById, isProductsLoading])
+  }, [params.id, params.category, getProductById, isProductsLoading, products])
 
   if (isLoading || isProductsLoading) {
     return (
@@ -433,7 +434,7 @@ export default function CategoryProductDetailPage() {
     ? Math.round((1 - product.price / product.originalPrice) * 100) 
     : 0
 
-  const categorySlug = categoryConfig[product.category]?.slug || params.category
+  const categorySlug = getCategorySlug(product.category)
 
   return (
     <div className="min-h-screen bg-background">

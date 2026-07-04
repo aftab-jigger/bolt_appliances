@@ -114,12 +114,53 @@ export function getProductById(id, products = []) {
   return products.find((p) => p.id === parseInt(id, 10))
 }
 
-export function getCategorySlug(category) {
-  return categoryConfig[category]?.slug || category.toLowerCase().replace(/\s+/g, '-')
+export function slugifyCategory(category) {
+  if (!category) return ""
+  return category.toLowerCase().trim().replace(/\s+/g, "-")
 }
 
-export function getCategoryBySlug(slug) {
-  const result = Object.keys(categoryConfig).find(cat => categoryConfig[cat].slug === slug)
-  // console.log("[v0] getCategoryBySlug:", { slug, result, availableSlugs: Object.values(categoryConfig).map(c => c.slug) })
-  return result
+export function formatCategoryTitle(category) {
+  if (!category) return ""
+  const trimmed = category.trim()
+  if (/^[a-z]{2,4}$/i.test(trimmed)) {
+    return trimmed.toUpperCase()
+  }
+  return trimmed
+    .split(/\s+/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ")
+}
+
+export function getCategorySlug(category) {
+  return categoryConfig[category]?.slug || slugifyCategory(category)
+}
+
+export function getCategoryBySlug(slug, categories = []) {
+  const fromConfig = Object.keys(categoryConfig).find(
+    (cat) => categoryConfig[cat].slug === slug,
+  )
+  if (fromConfig) return fromConfig
+
+  return categories.find((cat) => getCategorySlug(cat) === slug) || null
+}
+
+export function getCategoryConfig(categoryName, products = []) {
+  if (categoryConfig[categoryName]) {
+    return categoryConfig[categoryName]
+  }
+
+  const categoryProducts = products.filter((product) => product.category === categoryName)
+  const brands = [...new Set(categoryProducts.map((product) => product.brand).filter(Boolean))]
+
+  return {
+    slug: getCategorySlug(categoryName),
+    title: formatCategoryTitle(categoryName),
+    description: `Explore our selection of ${formatCategoryTitle(categoryName).toLowerCase()}`,
+    features: [],
+    brands,
+    filters: {
+      brand: true,
+      price: true,
+    },
+  }
 }
