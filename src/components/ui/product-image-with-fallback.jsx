@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react"
-import { ProductImagePlaceholder } from "@/assets/icons/icons"
+import { useEffect, useRef, useState } from "react";
+import { ProductImagePlaceholder } from "@/assets/icons/icons";
 
 function ProductImageWithFallback({
   src,
@@ -10,27 +10,31 @@ function ProductImageWithFallback({
   sizes,
   showSkeleton = true,
 }) {
-  const [hasError, setHasError] = useState(false)
-  const [isLoaded, setIsLoaded] = useState(false)
-  const imageRef = useRef(null)
+  const [hasError, setHasError] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const imageRef = useRef(null);
 
   useEffect(() => {
-    setHasError(false)
-    setIsLoaded(false)
+    setHasError(false);
+    setIsLoaded(false);
 
     // Handle cached images that are already loaded before onLoad fires.
-    const img = imageRef.current
+    const img = imageRef.current;
     if (img && img.complete && img.naturalWidth > 0) {
-      setIsLoaded(true)
+      setIsLoaded(true);
     }
-  }, [src])
+  }, [src]);
 
   if (!src || hasError) {
-    return <ProductImagePlaceholder className="w-full h-full" />
+    return (
+      <div className="relative w-full h-full overflow-hidden">
+        <ProductImagePlaceholder className="absolute inset-0 w-full h-full" />
+      </div>
+    );
   }
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full overflow-hidden">
       {showSkeleton ? (
         <div
           className={`shimmer-surface absolute inset-0 rounded-lg transition-opacity duration-300 ${
@@ -42,18 +46,18 @@ function ProductImageWithFallback({
         ref={imageRef}
         src={src}
         alt={alt}
-        className={`${className} ${isLoaded ? "opacity-100" : "opacity-0"} transition-opacity duration-300`}
+        className={`absolute inset-0 ${className} ${isLoaded ? "opacity-100" : "opacity-0"} transition-opacity duration-300`}
         loading={loading}
         decoding={decoding}
         sizes={sizes}
         onLoad={() => setIsLoaded(true)}
         onError={() => {
-          setHasError(true)
-          setIsLoaded(true)
+          setHasError(true);
+          setIsLoaded(true);
         }}
       />
     </div>
-  )
+  );
 }
 
-export default ProductImageWithFallback
+export default ProductImageWithFallback;
